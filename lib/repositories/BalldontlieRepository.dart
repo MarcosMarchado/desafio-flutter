@@ -23,13 +23,14 @@ class BalldontlieRepository {
       await DBProvider.db.createPlayer({
         "firstName": player.firstName,
         "lastName": player.lastName,
-        "team_id": player.team.id
+        "team_id": player.team.id,
+        "api_id": player.id
       });
     });
   }
 
   handlerInsertDataBase() async {
-    for (var i = 1; i <= 30; i++) {
+    for (var i = 1; i <= 33; i++) {
       await getPlayers(i);
     }
   }
@@ -40,7 +41,7 @@ class BalldontlieRepository {
 
     List<TeamModel> teams;
 
-    Map responseMap = json.decode(response.body);
+    Map responseMap = await json.decode(response.body);
     if (response.statusCode == 200 || response.statusCode == 201) {
       teams = (responseMap["data"] as List)
           .map((item) => TeamModel.fromJson(item))
@@ -57,15 +58,16 @@ class BalldontlieRepository {
       var count = await DBProvider.db.getCountPlayerPerTeam(teams[i].id);
       var fullName = teams[i].fullName;
       var id = teams[i].id;
+
       List<PlayerBDModel> players =
           await DBProvider.db.getPlayerPerTeam(teams[i].id);
 
       resultado.add(new TeamWithPlayersViewModel(
           countPlayers: count, fullName: fullName, id: id, players: players));
-      print(resultado[0].fullName);
     }
 
-    await handlerInsertDataBase();
+    // await handlerInsertDataBase();
+    DBProvider.db.getAllPlayers();
 
     return resultado;
   }

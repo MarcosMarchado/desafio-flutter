@@ -2,10 +2,11 @@ class PlayerBDModel {
   int id;
   String firstName;
   String lastName;
-  // ignore: non_constant_identifier_names
   int team_id;
+  int api_id;
 
-  PlayerBDModel({this.firstName, this.lastName, this.id, this.team_id});
+  PlayerBDModel(
+      {this.firstName, this.lastName, this.id, this.team_id, this.api_id});
 
   Map<String, dynamic> toMap() {
     var map = Map<String, dynamic>();
@@ -15,6 +16,7 @@ class PlayerBDModel {
     map['firstName'] = firstName;
     map['lastName'] = lastName;
     map['team_id'] = team_id;
+    map['api_id'] = api_id;
     return map;
   }
 
@@ -23,5 +25,6 @@ class PlayerBDModel {
     this.firstName = map['firstName'];
     this.lastName = map['lastName'];
     this.team_id = map['team_id'];
+    this.api_id = map['api_id'];
   }
 }

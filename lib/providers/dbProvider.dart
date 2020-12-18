@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:flutter_desafio/model/PlayerBDModel.dart';
 import 'package:path/path.dart';
@@ -20,24 +19,24 @@ class DBProvider {
   initDB() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     final path = join(documentsDirectory.path, 'players.db');
-
-    return await openDatabase(path, version: 1, onOpen: (db) {},
+    // await deleteDatabase(path);
+    return await openDatabase(path, version: 5, onOpen: (db) {},
         onCreate: (Database db, int version) async {
       await db.execute(
         'CREATE TABLE Player('
         'id INTEGER PRIMARY KEY,'
         'firstName TEXT,'
         'lastName TEXT UNIQUE,'
-        'team_id INTEGER'
+        'team_id INTEGER,'
+        'api_id INTEGER UNIQUE'
         ')',
       );
-
-      // await db.execute("DROP TABLE IF EXISTS Player");
     });
   }
 
-  createPlayer(Map<String, dynamic> row) async {
+  Future createPlayer(Map<String, dynamic> row) async {
     final db = await database;
+
     var res = await db.insert('Player', row);
 
     return res;
@@ -47,13 +46,7 @@ class DBProvider {
     final db = await database;
     final res = await db
         .rawQuery("SELECT DISTINCT lastName, FirstName, team_id FROM PLAYER");
-
-    return res;
-  }
-
-  getRows() async {
-    final db = await database;
-    final res = await db.rawQuery("SELECT COUNT(*) FROM Player");
+    print(res.length);
     return res;
   }
 
@@ -61,7 +54,7 @@ class DBProvider {
     final db = await database;
 
     final res = await db.rawQuery(
-        "SELECT DISTINCT lastName, FirstName, team_id FROM PLAYER p WHERE p.team_id = $id");
+        "SELECT DISTINCT lastName, FirstName, team_id, api_id FROM PLAYER p WHERE p.team_id = $id");
 
     int count = res.length;
 
@@ -84,7 +77,6 @@ class DBProvider {
   deleteAllPlayers() async {
     final db = await database;
     final res = await db.rawDelete('DELETE FROM Player');
-
     return res;
   }
 }
